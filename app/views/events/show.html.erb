@@ -1,0 +1,136 @@
+<h1><%= @event.name %></h1>
+
+<div class="event-details">
+  <p><strong>Dates:</strong> <%= @event.start_date.strftime('%B %d, %Y') %> to <%= @event.end_date.strftime('%B %d, %Y') %></p>
+  <p><strong>Location:</strong> <%= @event.location %></p>
+  <p><strong>Organizer:</strong> <%= @event.organizer.user.name %></p>
+  
+  <% if @event.description.present? %>
+    <div class="event-description">
+      <h3>Description</h3>
+      <p><%= @event.description %></p>
+    </div>
+  <% end %>
+  
+  <% if @event.organizer == current_user&.organizer %>
+    <div class="event-actions">
+      <%= link_to "Edit Event", edit_event_path(@event), class: "button" %>
+      <%= button_to "Delete Event", event_path(@event), method: :delete, data: { confirm: "Are you sure? This cannot be undone." }, class: "button delete" %>
+    </div>
+  <% end %>
+</div>
+
+<% if Date.today <= @event.end_date %>
+  <div class="registration-section">
+    <h3>Register Your Team</h3>
+    <% if current_user&.role == 'player' %>
+      <% user_teams = current_user.player.teams %>
+      <% if user_teams.any? %>
+        <% unregistered_teams = user_teams.where.not(id: @event.teams.pluck(:id)) %>
+        <% if unregistered_teams.any? %>
+          <%= form_with url: event_participations_path(@event), method: :post, local: true do |f| %>
+          <div class="field">
+              <%= f.label :team_id, "Select Team" %>
+              <%= f.collection_select :team_id, unregistered_teams, :id, :name, prompt: "Select a team" %>
+            </div>
+            
+            <div class="actions">
+              <%= f.submit "Register Team" %>
+            </div>
+          <% end %>
+        <% else %>
+          <p>All your teams are already registered for this event.</p>
+        <% end %>
+      <% else %>
+        <p>You don't have any teams. <%= link_to "Create a team", new_team_path %> to register for this event.</p>
+      <% end %>
+    <% else %>
+      <p>Log in as a player to register your team.</p>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="registered-teams">
+  <h3>Registered Teams</h3>
+  <% if @teams.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <% if @event.organizer == current_user&.organizer %>
+            <th>Actions</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @teams.each do |team| %>
+          <% participation = Participation.find_by(team: team, event: @event) %>
+          <tr>
+            <td><%= link_to team.name, team_path(team) %></td>
+            <td><%= team.player.user.name %></td>
+            <td class="status <%= participation.status %>"><%= participation.status.capitalize %></td>
+            <% if @event.organizer == current_user&.organizer %>
+              <td>
+                <% if participation.status == 'pending' %>
+                  <%= button_to "Approve", 
+                      event_participation_path(@event, participation),
+                      method: :patch,
+                      params: { participation: { status: 'approved' } },
+                      class: "button small" %>
+                  <%= button_to "Reject", 
+                      event_participation_path(@event, participation),
+                      method: :patch,
+                      params: { participation: { status: 'rejected' } },
+                      class: "button small delete" %>
+                <% elsif participation.status == 'approved' %>
+                  <%= button_to "Set as Pending", 
+                      event_participation_path(@event, participation),
+                      method: :patch,
+                      params: { participation: { status: 'pending' } },
+                      class: "button small" %>
+                <% elsif participation.status == 'rejected' %>
+                  <%= button_to "Approve", 
+                      event_participation_path(@event, participation),
+                      method: :patch,
+                      params: { participation: { status: 'approved' } },
+                      class: "button small" %>
+                <% end %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No teams registered yet.</p>
+  <% end %>
+</div>
+
+<% if @event.end_date < Date.today %>
+  <div class="event-results">
+    <h3>Results</h3>
+    <% if @result %>
+      <div class="result-details">
+        <p><strong>Winner:</strong> <%= link_to @result.winner_team.name, team_path(@result.winner_team) %></p>
+        <p><strong>Score:</strong> <%= @result.score %></p>
+        <% if @result.details.present? %>
+          <p><strong>Details:</strong> <%= @result.details %></p>
+        <% end %>
+        
+        <% if @event.organizer == current_user&.organizer %>
+          <div class="result-actions">
+            <%= link_to "Edit Result", edit_event_result_path(@event, @result), class: "button small" %>
+            <%= button_to "Delete Result", event_result_path(@event, @result), method: :delete, data: { confirm: "Are you sure? This cannot be undone." }, class: "button small delete" %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p>No results recorded yet.</p>
+      <% if @event.organizer == current_user&.organizer %>
+        <%= link_to "Record Result", new_event_result_path(@event), class: "button" %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

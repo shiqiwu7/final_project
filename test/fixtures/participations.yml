@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  team: one
+  event: one
+  registration_date: 2025-03-30 21:23:56
+  status: MyString
+
+two:
+  team: two
+  event: two
+  registration_date: 2025-03-30 21:23:56
+  status: MyString

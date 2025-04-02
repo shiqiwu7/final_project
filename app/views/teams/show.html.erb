@@ -1,0 +1,79 @@
+<h1><%= @team.name %></h1>
+
+<div class="team-details">
+  <p><strong>Owner:</strong> <%= @team.player.user.name %></p>
+  
+  <% if @team.description.present? %>
+    <div class="team-description">
+      <h3>Description</h3>
+      <p><%= @team.description %></p>
+    </div>
+  <% end %>
+  
+<div class="team-members">
+  <h3>Team Members</h3>
+  <ul>
+    <% @members.reject { |member| member == @team.player }.each do |member| %> <!-- Filter out the owner -->
+      <li>
+        <%= member.user.name %>
+        <% if member == @team.player %>
+          <span class="badge badge-primary">Owner</span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+  
+  <% if current_user&.player %>
+    <div class="team-membership-actions">
+      <% if !current_user.player.member_of?(@team) %>
+        <%= button_to "Join Team", join_team_path(@team), method: :post, class: "button" %>
+      <% elsif current_user.player != @team.player %>
+        <%= button_to "Leave Team", leave_team_path(@team), method: :delete, data: { confirm: "Are you sure you want to leave this team?" }, class: "button" %>
+      <% end %>
+    </div>
+  <% end %>
+  
+  <% if @team.player == current_user&.player %>
+    <div class="team-actions">
+      <%= link_to "Edit Team", edit_team_path(@team), class: "button" %>
+      <%= button_to "Delete Team", team_path(@team), method: :delete, data: { confirm: "Are you sure? This cannot be undone." }, class: "button delete" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="team-events">
+  <h3>Upcoming Events</h3>
+  <% if @team.events.where('end_date >= ?', Date.today).any? %>
+    <ul>
+      <% @team.events.where('end_date >= ?', Date.today).each do |event| %>
+        <li>
+          <%= link_to event.name, event_path(event) %>
+          (<%= event.start_date.strftime('%B %d, %Y') %>)
+          <% participation = Participation.find_by(team: @team, event: event) %>
+          <span class="status <%= participation.status %>"><%= participation.status.capitalize %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No upcoming events.</p>
+  <% end %>
+  
+  <h3>Past Events</h3>
+  <% if @team.events.where('end_date < ?', Date.today).any? %>
+    <ul>
+      <% @team.events.where('end_date < ?', Date.today).each do |event| %>
+        <li>
+          <%= link_to event.name, event_path(event) %>
+          (<%= event.start_date.strftime('%B %d, %Y') %>)
+          <% if event.result && event.result.winner_team == @team %>
+            <span class="winner">Winner!</span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No past events.</p>
+  <% end %>
+</div>

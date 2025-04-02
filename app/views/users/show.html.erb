@@ -1,0 +1,95 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          <h2>My Profile</h2>
+        </div>
+        <div class="card-body">
+          <% if notice %>
+            <div class="alert alert-success"><%= notice %></div>
+          <% end %>
+          
+          <div class="row mb-3">
+            <div class="col-md-3 text-md-right font-weight-bold">Name:</div>
+            <div class="col-md-9"><%= @user.name %></div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-3 text-md-right font-weight-bold">Email:</div>
+            <div class="col-md-9"><%= @user.email %></div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-3 text-md-right font-weight-bold">Role:</div>
+            <div class="col-md-9"><%= @user.role.capitalize %></div>
+          </div>
+          
+          <% if @user.role == 'player' && @user.player.present? %>
+            <div class="row mb-3">
+              <div class="col-md-3 text-md-right font-weight-bold">Teams:</div>
+              <div class="col-md-9">
+                <% if @user.player.all_teams.any? %>
+                  <ul class="list-group">
+                    <% @user.player.owned_teams.each do |team| %>
+                      <li class="list-group-item">
+                        <%= link_to team.name, team_path(team) %>
+                        <span class="badge badge-primary">Owner</span>
+                      </li>
+                    <% end %>
+                    <% @user.player.teams.each do |team| %>
+                      <li class="list-group-item">
+                        <%= link_to team.name, team_path(team) %>
+                        <%= button_to "Leave", leave_team_path(team), method: :delete, class: "btn btn-sm btn-danger float-right" %>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <p>Not a member of any teams yet.</p>
+                <% end %>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-3 text-md-right font-weight-bold">Upcoming Events:</div>
+              <div class="col-md-9">
+                <% upcoming_events = @user.player.all_teams.flat_map(&:participations).map(&:event).uniq.select { |e| e.start_date >= Date.today } %>
+                <% if upcoming_events.any? %>
+                  <ul class="list-group">
+                    <% upcoming_events.each do |event| %>
+                      <li class="list-group-item"><%= link_to event.name, event_path(event) %> - <%= event.start_date.strftime("%B %d, %Y") %></li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <p>No upcoming events.</p>
+                <% end %>
+              </div>
+            </div>
+          <% elsif @user.role == 'organizer' && @user.organizer.present? %>
+          <h4 class="mb-3 text-secondary">Organizer Information</h4>
+            
+            <div class="row mb-3">
+              <div class="col-md-3 text-md-right font-weight-bold">Events Organized:</div>
+              <div class="col-md-9">
+                <% if @user.organizer.events.any? %>
+                  <ul class="list-group">
+                    <% @user.organizer.events.each do |event| %>
+                      <li class="list-group-item"><%= link_to event.name, event_path(event) %> - <%= event.start_date.strftime("%B %d, %Y") %></li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <p>No events created yet.</p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          
+          <div class="mt-4">
+            <%= link_to "Edit Profile", profile_edit_path, class: "btn btn-primary" %>
+            <%= link_to "Back", root_path, class: "btn btn-secondary ml-2" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

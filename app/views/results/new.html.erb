@@ -1,0 +1,35 @@
+<h1>Record Result for <%= @event.name %></h1>
+
+<%= form_with model: [@event, @result], local: true do |f| %>
+  <% if @result.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@result.errors.count, "error") %> prohibited this result from being saved:</h2>
+      <ul>
+        <% @result.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :winner_team_id, "Winning Team" %>
+    <%= f.collection_select :winner_team_id, @teams, :id, :name, prompt: "Select the winning team" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :score, "Final Score" %>
+    <%= f.text_field :score, placeholder: "e.g., 3-2 or Team A 3 - Team B 2", required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :details %>
+    <%= f.text_area :details, rows: 5, placeholder: "Add any additional details about the event result" %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Record Result" %>
+  </div>
+<% end %>
+
+<%= link_to "Back to Event", event_path(@event) %>

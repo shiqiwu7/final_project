@@ -1,0 +1,47 @@
+<h1>Sports Events</h1>
+
+<% if current_user&.role == 'organizer' %>
+  <%= link_to "Create New Event", new_event_path, class: "button" %>
+<% end %>
+
+<div class="events-filters">
+  <h3>Filter Events</h3>
+</div>
+
+<h2>Upcoming Events</h2>
+<div class="events-list">
+  <% upcoming_events = @events.where('start_date >= ?', Date.today) %>
+  <% if upcoming_events.any? %>
+    <% upcoming_events.each do |event| %>
+      <div class="event-card">
+        <h3><%= link_to event.name, event_path(event) %></h3>
+        <p><strong>Date:</strong> <%= event.start_date.strftime('%B %d, %Y') %> to <%= event.end_date.strftime('%B %d, %Y') %></p>
+        <p><strong>Location:</strong> <%= event.location %></p>
+        <p><strong>Organizer:</strong> <%= event.organizer.user.name %></p>
+        <p><%= truncate(event.description, length: 100) if event.description %></p>
+        <p><strong>Teams:</strong> <%= event.teams.count %> registered</p>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No upcoming events.</p>
+  <% end %>
+</div>
+
+<h2>Past Events</h2>
+<div class="events-list">
+  <% past_events = @events.where('end_date < ?', Date.today) %>
+  <% if past_events.any? %>
+    <% past_events.each do |event| %>
+      <div class="event-card past">
+        <h3><%= link_to event.name, event_path(event) %></h3>
+        <p><strong>Date:</strong> <%= event.start_date.strftime('%B %d, %Y') %> to <%= event.end_date.strftime('%B %d, %Y') %></p>
+        <p><strong>Location:</strong> <%= event.location %></p>
+        <% if event.result %>
+          <p class="winner"><strong>Winner:</strong> <%= event.result.winner_team.name %></p>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No past events.</p>
+  <% end %>
+</div>
