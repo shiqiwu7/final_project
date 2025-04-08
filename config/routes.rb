@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
   # Resources
   # resources :users, except: [ :index, :destroy ]
-  resources :users, only: [ :new, :create ]
+  resources :users, only: [ :show, :new, :create ]
 
   resources :teams do
     member do
@@ -51,7 +51,12 @@ Rails.application.routes.draw do
           delete "leave"
         end
       end
-      resources :users, only: [ :show, :update ]
+      resources :users, only: [ :show, :update ] do
+      # Add the update_avatar route under the users resource
+      collection do
+        post "update_avatar", to: "users#update_avatar"
+      end
+    end
       resources :participations, only: [ :create, :update, :destroy ]
     end
   end

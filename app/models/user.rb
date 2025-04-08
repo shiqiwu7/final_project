@@ -8,13 +8,31 @@ class User < ApplicationRecord
   has_one :player, dependent: :destroy
   has_one :organizer, dependent: :destroy
 
+  has_one_attached :avatar
+
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :role, presence: true, inclusion: { in: %w[player organizer] }
 
+  validates :avatar, content_type: { in: [ "image/jpeg", "image/png", "image/gif" ],
+    message: "must be a JPEG, PNG, or GIF" },
+    size: { less_than: 5.megabytes,
+    message: "must be less than 5MB" },
+    if: -> { avatar.attached? }
+
   after_create :create_role_specific_record
 
   private
+
+  def acceptable_avatar
+    unless avatar.blob.content_type.in?([ "image/jpeg", "image/png", "image/gif" ])
+      errors.add(:avatar, "must be a JPEG, PNG, or GIF")
+    end
+
+    if avatar.blob.byte_size > 5.megabytes
+      errors.add(:avatar, "must be less than 5MB")
+    end
+  end
 
   # def create_role_specific_record
   #   if role == "player"

@@ -44,7 +44,7 @@ class Api::V1::TeamsController < Api::V1::BaseController
       return render json: { error: "You are already a member of this team." }, status: :unprocessable_entity
     end
 
-    membership = TeamPlayer.new(team: @team, player: player, role: 'member')
+    membership = TeamPlayer.new(team: @team, player: player, role: "member")
 
     if membership.save
       render json: { message: "Successfully joined the team" }, status: :ok

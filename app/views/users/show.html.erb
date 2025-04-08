@@ -6,9 +6,29 @@
           <h2>My Profile</h2>
         </div>
         <div class="card-body">
-          <% if notice %>
-            <div class="alert alert-success"><%= notice %></div>
-          <% end %>
+          
+          <div class="row mb-4">
+            <div class="col-md-3 text-md-right">
+              <!-- Avatar display section -->
+              <% if @user.avatar.attached? %>
+                <%= image_tag @user.avatar.variant(resize_to_limit: [150, 150]), class: "img-thumbnail rounded-circle" %>
+              <% else %>
+                <div class="avatar-placeholder rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                  <span style="font-size: 2rem;"><%= @user.name[0].upcase %></span>
+                </div>
+              <% end %>
+            </div>
+            <div class="col-md-9">
+              <!-- Avatar upload button -->
+              <%= form_with(model: @user, url: profile_path, method: :patch, local: true, class: "mt-2") do |form| %>
+                <div class="custom-file mb-2" style="max-width: 300px;">
+                  <%= form.file_field :avatar, class: "custom-file-input", id: "avatarUpload" %>
+                  <label class="custom-file-label" for="avatarUpload">Choose image...</label>
+                </div>
+                <%= form.submit "Upload Image", class: "btn btn-sm btn-primary" %>
+              <% end %>
+            </div>
+          </div>
           
           <div class="row mb-3">
             <div class="col-md-3 text-md-right font-weight-bold">Name:</div>
