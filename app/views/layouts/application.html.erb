@@ -21,7 +21,7 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   </head>
 
- <body>
+  <body>
     <header class="main-header">
       <div class="container">
         <h1 class="site-title"><%= link_to "Sports Event Management", root_path %></h1>
@@ -29,16 +29,19 @@
           <ul>
             <li><%= link_to "Events", events_path %></li>
             <li><%= link_to "Teams", teams_path %></li>
-            <% if logged_in? %>
+
+            <% if user_signed_in? %>
               <% if current_user.role == 'player' %>
                 <li><%= link_to "My Profile", profile_path %></li>
               <% elsif current_user.role == 'organizer' %>
                 <li><%= link_to "My Organization", organization_path %></li>
               <% end %>
-              <li><%= button_to "Log Out", logout_path, method: :delete, class: "logout-button" %></li>
+              <li>
+                <%= button_to "Log Out", destroy_user_session_path, method: :delete, class: "logout-button" %>
+              </li>
             <% else %>
-              <li><%= link_to "Log In", login_path %></li>
-              <li><%= link_to "Sign Up", signup_path %></li>
+              <li><%= link_to "Log In", new_user_session_path %></li>
+              <li><%= link_to "Sign Up", new_user_registration_path %></li>
             <% end %>
           </ul>
         </nav>

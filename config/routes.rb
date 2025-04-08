@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   root "events#index"
 
   # Authentication routes
@@ -10,7 +11,7 @@ Rails.application.routes.draw do
 
   # Resources
   # resources :users, except: [ :index, :destroy ]
-  resources :users, only: [:new, :create]
+  resources :users, only: [ :new, :create ]
 
   resources :teams do
     member do
@@ -33,4 +34,25 @@ Rails.application.routes.draw do
   get "/organization", to: "users#show"
   get "/organization/edit", to: "users#edit"
   patch "/organization", to: "users#update"
+
+  # API routes
+  namespace :api do
+    namespace :v1 do
+      devise_scope :user do
+        post "auth/login", to: "auth#login"
+        post "auth/register", to: "auth#register"
+        delete "auth/logout", to: "auth#logout"
+      end
+
+      resources :events, only: [ :index, :show, :create, :update, :destroy ]
+      resources :teams, only: [ :index, :show, :create, :update, :destroy ] do
+        member do
+          post "join"
+          delete "leave"
+        end
+      end
+      resources :users, only: [ :show, :update ]
+      resources :participations, only: [ :create, :update, :destroy ]
+    end
+  end
 end

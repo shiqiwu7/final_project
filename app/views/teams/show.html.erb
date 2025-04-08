@@ -13,9 +13,9 @@
 <div class="team-members">
   <h3>Team Members</h3>
   <ul>
-    <% @members.reject { |member| member == @team.player }.each do |member| %> <!-- Filter out the owner -->
+    <% @members.reject { |member| member == @team.player }.each do |member| %>
       <li>
-        <%= member.user.name %>
+        <%= member.name %>
         <% if member == @team.player %>
           <span class="badge badge-primary">Owner</span>
         <% end %>

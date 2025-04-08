@@ -1,27 +1,9 @@
-# class User < ApplicationRecord
-#   has_secure_password
-
-#   has_one :player, dependent: :destroy
-#   has_one :organizer, dependent: :destroy
-
-#   validates :name, presence: true
-#   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-#   validates :role, presence: true, inclusion: { in: %w[player organizer] }
-
-#   after_create :create_role_specific_record
-
-#   private
-
-#   def create_role_specific_record
-#     if role == "player"
-#       Player.create(user: self)
-#     elsif role == "organizer"
-#       Organizer.create(user: self)
-#     end
-#   end
-# end
 class User < ApplicationRecord
-  has_secure_password
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+         :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
+  # has_secure_password
 
   has_one :player, dependent: :destroy
   has_one :organizer, dependent: :destroy
