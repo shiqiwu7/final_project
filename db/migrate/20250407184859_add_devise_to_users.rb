@@ -3,18 +3,13 @@
 class AddDeviseToUsers < ActiveRecord::Migration[8.0]
   def self.up
     change_table :users do |t|
-      # 以下字段已存在，注释掉
       # t.string :email,              null: false, default: ""
       # t.string :encrypted_password, null: false, default: ""
-
-      ## Recoverable（你可以先确认这两个字段是否存在）
       # t.string   :reset_password_token
       # t.datetime :reset_password_sent_at
 
       ## Rememberable
       t.datetime :remember_created_at unless column_exists?(:users, :remember_created_at)
-
-      ## Trackable（如果要使用，再打开）
       # t.integer  :sign_in_count, default: 0, null: false
       # t.datetime :current_sign_in_at
       # t.datetime :last_sign_in_at
@@ -35,7 +30,6 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
       # t.timestamps null: false  # 你已经有 created_at 和 updated_at，无需再加
     end
 
-    # 下面这些索引也可能已经存在，根据报错提示决定是否注释
     # add_index :users, :email, unique: true
     # add_index :users, :reset_password_token, unique: true
     # add_index :users, :confirmation_token, unique: true
