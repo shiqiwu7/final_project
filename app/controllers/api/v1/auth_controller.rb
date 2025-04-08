@@ -1,4 +1,3 @@
-# app/controllers/api/v1/auth_controller.rb
 class Api::V1::AuthController < Api::V1::BaseController
   skip_before_action :authenticate_jwt, only: [:login]
   skip_before_action :authenticate_user!, only: [ :login, :register ]

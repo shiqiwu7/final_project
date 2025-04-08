@@ -1,4 +1,3 @@
-# app/controllers/api/v1/events_controller.rb
 class Api::V1::EventsController < Api::V1::BaseController
   before_action :authenticate_jwt
   before_action :authenticate_user!

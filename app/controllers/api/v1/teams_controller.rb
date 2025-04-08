@@ -33,24 +33,6 @@ class Api::V1::TeamsController < Api::V1::BaseController
     head :no_content
   end
 
-  # def join
-  #   @team = Team.find_by(id: params[:id])
-  #   return render json: { error: "Team not found" }, status: :not_found unless @team
-
-  #   existing = TeamPlayer.find_by(team: @team, player: current_user)
-  #   if existing
-  #     return render json: { error: "You are already a member of this team." }, status: :unprocessable_entity
-  #   end
-
-  #   membership = TeamPlayer.new(team: @team, player: current_user, role: 'member')
-
-  #   if membership.save
-  #     render json: { message: "Successfully joined the team" }, status: :ok
-  #   else
-  #     render json: { errors: membership.errors.full_messages }, status: :unprocessable_entity
-  #   end
-  # end
-
   def join
     @team = Team.find_by(id: params[:id])
     return render json: { error: "Team not found" }, status: :not_found unless @team
