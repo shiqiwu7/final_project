@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
@@ -21,6 +20,10 @@ class User < ApplicationRecord
     if: -> { avatar.attached? }
 
   after_create :create_role_specific_record
+
+  def self.devise_modules_hook!
+    self.include_devise_modules!
+  end
 
   private
 
