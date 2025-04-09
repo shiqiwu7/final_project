@@ -26,7 +26,7 @@ gem "devise"
 gem "devise-jwt"
 
 gem "image_processing", "~> 1.2"
-gem "mini_magick", "~> 4.11"
+gem "mini_magick", "~> 5.2"
 gem "activestorage", "~> 8.0.2"
 gem "active_storage_validations"
 
