@@ -1,9 +1,13 @@
-Rails.application.config.after_initialize do
-  if defined?(User) && User.table_exists?
-    # Make sure User model has Devise's required attributes
-    User.class_eval do
-      # Force column information reload
-      reset_column_information
+Rails.application.config.to_prepare do
+  begin
+    if ActiveRecord::Base.connection.table_exists?('users')
+      if defined?(User)
+        User.class_eval do
+          reset_column_information
+        end
+      end
     end
+  rescue ActiveRecord::NoDatabaseError, PG::ConnectionBad
+    Rails.logger.warn "Skipping devise fix - database not available yet"
   end
 end
