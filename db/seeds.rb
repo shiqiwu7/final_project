@@ -3,6 +3,7 @@ admin = User.create!(
   name: "Admin",
   email: "admin@example.com",
   password: "passwordadmin",
+  password_confirmation: "passwordadmin",
   role: "organizer"
 )
 
@@ -11,6 +12,7 @@ player1 = User.create!(
   name: "John Doe",
   email: "player1@example.com",
   password: "password1",
+  password_confirmation: "password1",
   role: "player"
 )
 
@@ -18,6 +20,7 @@ player2 = User.create!(
   name: "Jane Smith",
   email: "player2@example.com",
   password: "password2",
+  password_confirmation: "password2",
   role: "player"
 )
 
@@ -25,6 +28,7 @@ player3 = User.create!(
   name: "Mike Johnson",
   email: "player3@example.com",
   password: "password3",
+  password_confirmation: "password3",
   role: "player"
 )
 
